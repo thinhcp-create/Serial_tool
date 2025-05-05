@@ -1,0 +1,2 @@
+pyinstaller --onefile --windowed --icon=new_icon.ico my_script.py
+pyuic5 -x app.ui -o gui.py

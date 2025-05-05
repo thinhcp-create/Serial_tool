@@ -10,6 +10,7 @@ from PyQt5.QtWidgets import (
 from PyQt5.QtWidgets import QCheckBox  
 from PyQt5.QtCore import QThread, pyqtSignal
 from PyQt5.QtWidgets import QMessageBox
+from PyQt5.QtWidgets import QFileDialog
 
 SAVE_FILE = "saved_commands.json"
 
@@ -88,6 +89,9 @@ class SerialApp(QWidget):
         right_panel.addLayout(port_layout)
         right_panel.addWidget(self.receive_text)
         right_panel.addWidget(self.auto_scroll_checkbox)
+        save_log_btn = QPushButton("Save Log")
+        save_log_btn.clicked.connect(self.save_log_to_file)
+        right_panel.addWidget(save_log_btn)
 
         main_layout.addLayout(right_panel, 3)
 
@@ -168,6 +172,20 @@ class SerialApp(QWidget):
                         self.quick_inputs[i].setText(commands[i])
             except Exception as e:
                 print(f"Lỗi đọc file: {e}")
+
+    def save_log_to_file(self):
+        options = QFileDialog.Options()
+        filename, _ = QFileDialog.getSaveFileName(
+            self, "Lưu log", "serial_log.txt",
+            "Text Files (*.txt);;All Files (*)", options=options
+        )
+        if filename:
+            try:
+                with open(filename, "w", encoding='utf-8') as f:
+                    f.write(self.receive_text.toPlainText())
+                QMessageBox.information(self, "Thành công", f"Đã lưu log vào:\n{filename}")
+            except Exception as e:
+                QMessageBox.critical(self, "Lỗi", f"Lỗi khi lưu log:\n{e}")
 
 
 if __name__ == "__main__":
